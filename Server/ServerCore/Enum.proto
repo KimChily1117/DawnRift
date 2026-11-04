@@ -1,0 +1,27 @@
+syntax = "proto3";
+package Protocol;
+
+option csharp_namespace = "Google.Protobuf.Protocol";  // ✅ 네임스페이스 추가
+
+
+enum PLAYER_CHAMPION_TYPE
+{
+	PLAYER_TYPE_NONE = 0;
+	PLAYER_TYPE_ANNIE = 1;
+	PLAYER_TYPE_GAREN = 2;
+}
+
+enum OBJECT_TYPE
+{
+	OBJECT_TYPE_NONE = 0;
+	OBJECT_TYPE_PLAYER = 1;
+	OBJECT_TYPE_OTHERPLAYER = 2;
+	OBJECT_TYPE_MINION = 3;
+}
+
+enum OBJECT_STATE_TYPE
+{
+	OBJECT_STATE_TYPE_IDLE = 0;
+	OBJECT_STATE_TYPE_MOVE = 1;
+	OBJECT_STATE_TYPE_SKILL = 2;
+}

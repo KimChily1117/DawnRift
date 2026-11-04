@@ -1,0 +1,14 @@
+<!-- 로비 채팅. 로비와 챔피언 선택 화면에서 함께 쓴다. -->
+<UserControl x:Class="Launcher.Views.ChatPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:behaviors="clr-namespace:Launcher.Behaviors">
+    <DockPanel>
+        <TextBox DockPanel.Dock="Bottom" MaxLength="150" Text="{Binding Draft, UpdateSourceTrigger=PropertyChanged}">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding SendCommand}" />
+            </TextBox.InputBindings>
+        </TextBox>
+        <ListBox ItemsSource="{Binding Lines}" Background="Transparent" BorderThickness="0" Margin="0,0,0,6" behaviors:AutoScroll.IsEnabled="True" />
+    </DockPanel>
+</UserControl>

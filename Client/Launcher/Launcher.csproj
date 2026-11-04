@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- League-style launcher: log in, custom game lobby, champion and skin select, then start Client.exe
+       with the lobby's token. Packets come from the server's generated protobuf code. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Launcher</AssemblyName>
+    <RootNamespace>Launcher</RootNamespace>
+    <NoWarn>$(NoWarn);CS8981</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.25.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\D3D_Server\Server\Server\Server\Packet\Protocol.cs" Link="Packet\Protocol.cs" />
+    <Compile Include="..\..\D3D_Server\Server\Server\Server\Packet\Enum.cs" Link="Packet\Enum.cs" />
+    <Compile Include="..\..\D3D_Server\Server\Server\Server\Packet\Struct.cs" Link="Packet\Struct.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Resources\Data\Champions\Roster.json" Link="Assets\Roster.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

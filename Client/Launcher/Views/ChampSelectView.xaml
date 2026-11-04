@@ -1,0 +1,207 @@
+<!-- 챔피언 선택 화면. 양 팀 선택 현황, 챔피언, 스킨, 소환사 주문. -->
+<UserControl x:Class="Launcher.Views.ChampSelectView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Launcher.ViewModels"
+             xmlns:views="clr-namespace:Launcher.Views">
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type vm:PickPanel}">
+            <StackPanel>
+                <TextBlock x:Name="Header" Text="{Binding Header}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource Red}" Margin="0,0,0,10" />
+                <ItemsControl ItemsSource="{Binding Rows}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel Margin="0,0,0,10">
+                                <Image Source="{Binding Icon}" Width="56" Height="56" Opacity="{Binding IconOpacity}" Margin="0,0,10,0" />
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                                    <TextBlock x:Name="Detail" Text="{Binding Detail}" Foreground="{StaticResource Muted}" FontSize="12" />
+                                    <ItemsControl ItemsSource="{Binding SpellIcons}" Margin="0,3,0,0">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Image Source="{Binding}" Width="20" Height="20" Margin="0,0,3,0" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </DockPanel>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsLocked}" Value="True">
+                                    <Setter TargetName="Detail" Property="Foreground" Value="{StaticResource Gold}" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsBlueTeam}" Value="True">
+                    <Setter TargetName="Header" Property="Foreground" Value="{StaticResource Blue}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid Margin="24,16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="260" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,0,0,10">
+            <TextBlock Text="{Binding Headline}" Style="{StaticResource Title}" HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding Timer}" FontSize="30" FontWeight="Bold" Foreground="{StaticResource Gold}" HorizontalAlignment="Center" />
+        </StackPanel>
+        <DockPanel Grid.Row="1">
+            <Border DockPanel.Dock="Bottom" Background="{StaticResource Panel}" BorderBrush="{StaticResource GoldDark}" BorderThickness="1" Padding="8" Height="170">
+                <views:ChatPanel DataContext="{Binding Chat}" />
+            </Border>
+            <ContentControl Content="{Binding MyPicks}" Focusable="False" />
+        </DockPanel>
+        <ContentControl Grid.Row="1" Grid.Column="2" Content="{Binding EnemyPicks}" Focusable="False" />
+        <Grid Grid.Row="1" Grid.Column="1" Margin="20,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ItemsControl ItemsSource="{Binding Filters}" HorizontalAlignment="Center">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Margin="4,0,4,0" FontSize="12" Command="{Binding Command}">
+                            <TextBlock x:Name="FilterText" Text="{Binding Label}" />
+                        </Button>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                <Setter TargetName="FilterText" Property="Foreground" Value="{StaticResource Teal}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding Champions}" HorizontalAlignment="Center" Margin="0,12">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Style="{StaticResource TileButton}" Command="{Binding Command}" IsEnabled="{Binding CanSelect}" ToolTip="{Binding Tooltip}">
+                            <Border x:Name="Frame" Margin="6" Padding="4" BorderThickness="2" BorderBrush="Transparent">
+                                <Grid Width="92" Height="112">
+                                    <Image Source="{Binding Icon}" Width="80" Height="80" VerticalAlignment="Top" Opacity="{Binding IconOpacity}" />
+                                    <TextBlock x:Name="Caption" Text="{Binding Caption}" FontSize="12" TextAlignment="Center" HorizontalAlignment="Center"
+                                               VerticalAlignment="Bottom" Foreground="{StaticResource Muted}" />
+                                </Grid>
+                            </Border>
+                        </Button>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter TargetName="Frame" Property="BorderBrush" Value="{StaticResource Teal}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsPlayable}" Value="True">
+                                <Setter TargetName="Caption" Property="Foreground" Value="{StaticResource Parchment}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding Skins}" HorizontalAlignment="Center">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource TileButton}" Command="{Binding Command}" IsEnabled="{Binding CanSelect}">
+                                <Border x:Name="Frame" Margin="6,0,6,0" BorderThickness="3" BorderBrush="{StaticResource GoldDark}">
+                                    <Grid Width="140" Height="254">
+                                        <Image Source="{Binding Image}" Stretch="UniformToFill" Opacity="{Binding ImageOpacity}" />
+                                        <Border VerticalAlignment="Bottom" Background="#CC010A13" Padding="4">
+                                            <TextBlock Text="{Binding Caption}" FontSize="12" TextAlignment="Center" TextWrapping="Wrap" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </Button>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                    <Setter TargetName="Frame" Property="BorderBrush" Value="{StaticResource Gold}" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <DockPanel Grid.Row="3" Margin="0,10,0,0">
+                <Button DockPanel.Dock="Right" Content="{Binding LockText}" Width="200" Height="48" Command="{Binding LockInCommand}" />
+                <ItemsControl x:Name="SpellSlotsPanel" DockPanel.Dock="Right" ItemsSource="{Binding SpellSlots}" Margin="0,0,12,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource TileButton}" Command="{Binding Command}" IsEnabled="{Binding CanChoose}" ToolTip="{Binding Tooltip}">
+                                <Border Margin="4,0,4,0" BorderThickness="2" BorderBrush="{StaticResource GoldDark}">
+                                    <Grid Width="48" Height="48">
+                                        <Image Source="{Binding Icon}" />
+                                        <TextBlock Text="{Binding Key}" FontSize="11" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                                   Margin="0,0,3,1" Foreground="White" />
+                                    </Grid>
+                                </Border>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Popup PlacementTarget="{Binding ElementName=SpellSlotsPanel}" IsOpen="{Binding IsSpellPopupOpen, Mode=TwoWay}" StaysOpen="False"
+                       Placement="Top" AllowsTransparency="True" VerticalOffset="-6">
+                    <Border Background="#EE010A13" BorderBrush="{StaticResource Gold}" BorderThickness="1" Padding="8">
+                        <ItemsControl ItemsSource="{Binding SpellChoices}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource TileButton}" Command="{Binding Command}">
+                                        <StackPanel Margin="4,0,4,0" Width="56">
+                                            <Border x:Name="Frame" BorderThickness="2" BorderBrush="Transparent">
+                                                <Image Source="{Binding Icon}" Width="48" Height="48" />
+                                            </Border>
+                                            <TextBlock Text="{Binding Label}" FontSize="12" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                            <Setter TargetName="Frame" Property="BorderBrush" Value="{StaticResource Gold}" />
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                </Popup>
+                <TextBlock Text="{Binding Message}" Foreground="{StaticResource Red}" VerticalAlignment="Center" TextWrapping="Wrap" />
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>

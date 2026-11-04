@@ -1,0 +1,109 @@
+<!-- 로비 화면. 팀 구성, 봇 설정, 채팅. -->
+<UserControl x:Class="Launcher.Views.LobbyView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:vm="clr-namespace:Launcher.ViewModels"
+             xmlns:views="clr-namespace:Launcher.Views">
+    <UserControl.Resources>
+        <!-- 슬롯 종류에 따라 색과 굵기만 바뀐다. -->
+        <DataTemplate x:Key="SlotTemplate">
+            <Border x:Name="Frame" Height="44" Margin="0,0,0,6" Padding="14,0,14,0" BorderThickness="1"
+                    BorderBrush="{StaticResource GoldDark}" Background="#99010A13">
+                <DockPanel>
+                    <TextBlock x:Name="LabelText" Text="{Binding Label}" Foreground="{StaticResource Gold}" Width="70" VerticalAlignment="Center" />
+                    <TextBlock x:Name="NameText" Text="{Binding Name}" FontSize="17" VerticalAlignment="Center" />
+                </DockPanel>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Kind}" Value="{x:Static vm:SlotKind.Me}">
+                    <Setter TargetName="Frame" Property="BorderBrush" Value="{StaticResource Teal}" />
+                    <Setter TargetName="NameText" Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="{x:Static vm:SlotKind.Bot}">
+                    <Setter TargetName="Frame" Property="Background" Value="#66010A13" />
+                    <Setter TargetName="LabelText" Property="Foreground" Value="{StaticResource Teal}" />
+                    <Setter TargetName="NameText" Property="Foreground" Value="{StaticResource Muted}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="{x:Static vm:SlotKind.Empty}">
+                    <Setter TargetName="LabelText" Property="Visibility" Value="Collapsed" />
+                    <Setter TargetName="NameText" Property="Foreground" Value="{StaticResource Muted}" />
+                    <Setter TargetName="NameText" Property="FontSize" Value="12" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid Margin="40,28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top">
+                <Button Content="방 나가기" Height="34" Width="110" Command="{Binding LeaveCommand}" />
+                <Button Content="방 터트리기" Height="34" Width="110" Margin="8,0,0,0" Command="{Binding DestroyCommand}" ToolTip="방장: 방과 진행 중인 게임을 모두 닫습니다"
+                        Visibility="{Binding IsHost, Converter={StaticResource BoolToVisibility}}" />
+            </StackPanel>
+            <StackPanel>
+                <TextBlock Text="{Binding Title}" Style="{StaticResource Title}" />
+                <TextBlock Text="{Binding Subtitle}" Foreground="{StaticResource Muted}" Margin="0,4,0,0" />
+            </StackPanel>
+        </DockPanel>
+        <Grid Grid.Row="1" Margin="0,16,0,150">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Border BorderBrush="{StaticResource Blue}" BorderThickness="0,3,0,0" Background="{StaticResource Panel}" Padding="16">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                        <Button DockPanel.Dock="Right" Content="블루팀 참가" Command="{Binding JoinBlueCommand}" />
+                        <Button DockPanel.Dock="Right" Content="−봇" Width="54" Margin="0,0,8,0" Command="{Binding RemoveBlueBotCommand}" ToolTip="블루팀 봇 하나 빼기 (방장)" />
+                        <Button DockPanel.Dock="Right" Content="+봇" Width="54" Margin="0,0,6,0" Command="{Binding AddBlueBotCommand}" ToolTip="블루팀 빈 자리에 봇 추가 (방장)" />
+                        <TextBlock Text="블루팀" FontSize="20" FontWeight="Bold" Foreground="{StaticResource Blue}" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <ItemsControl ItemsSource="{Binding BlueSlots}" ItemTemplate="{StaticResource SlotTemplate}" />
+                </DockPanel>
+            </Border>
+            <Border Grid.Column="2" BorderBrush="{StaticResource Red}" BorderThickness="0,3,0,0" Background="{StaticResource Panel}" Padding="16">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                        <Button DockPanel.Dock="Right" Content="레드팀 참가" Command="{Binding JoinRedCommand}" />
+                        <Button DockPanel.Dock="Right" Content="−봇" Width="54" Margin="0,0,8,0" Command="{Binding RemoveRedBotCommand}" ToolTip="레드팀 봇 하나 빼기 (방장)" />
+                        <Button DockPanel.Dock="Right" Content="+봇" Width="54" Margin="0,0,6,0" Command="{Binding AddRedBotCommand}" ToolTip="레드팀 빈 자리에 봇 추가 (방장)" />
+                        <TextBlock Text="레드팀" FontSize="20" FontWeight="Bold" Foreground="{StaticResource Red}" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <ItemsControl ItemsSource="{Binding RedSlots}" ItemTemplate="{StaticResource SlotTemplate}" />
+                </DockPanel>
+            </Border>
+        </Grid>
+        <Border Grid.Row="1" VerticalAlignment="Bottom" Margin="0,0,0,20" Background="{StaticResource Panel}" BorderBrush="{StaticResource GoldDark}" BorderThickness="1" Padding="8" Height="124">
+            <views:ChatPanel DataContext="{Binding Chat}" />
+        </Border>
+        <DockPanel Grid.Row="2">
+            <Button DockPanel.Dock="Right" Content="{Binding StartText}" Height="48" Width="220" Command="{Binding StartCommand}" />
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="내 포지션" Foreground="{StaticResource Gold}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                <ComboBox Width="140" ItemsSource="{Binding PositionLabels}" SelectedIndex="{Binding PositionIndex}" />
+                <CheckBox Content="연습 도구" Foreground="{StaticResource Gold}" VerticalAlignment="Center" Margin="20,0,0,0"
+                          IsChecked="{Binding Practice}" IsEnabled="{Binding IsHost}" />
+                <TextBlock Text="봇 난이도" Foreground="{StaticResource Gold}" VerticalAlignment="Center" Margin="20,0,8,0" />
+                <ComboBox Width="90" SelectedIndex="{Binding DifficultyIndex}" IsEnabled="{Binding IsHost}">
+                    <sys:String>쉬움</sys:String>
+                    <sys:String>보통</sys:String>
+                </ComboBox>
+                <Button Content="봇전 채우기" Margin="10,0,0,0" Height="34" Command="{Binding FillBotsCommand}" ToolTip="두 팀의 빈 자리를 모두 봇으로 채웁니다 (방장)" />
+                <Button x:Name="HistoryButton" Content="지난 경기" Margin="20,0,0,0" Height="34" Command="{Binding History.OpenCommand}" />
+                <Popup PlacementTarget="{Binding ElementName=HistoryButton}" IsOpen="{Binding History.IsOpen, Mode=TwoWay}" StaysOpen="False"
+                       Placement="Top" AllowsTransparency="True" VerticalOffset="-6">
+                    <Border Background="#EE010A13" BorderBrush="{StaticResource Gold}" BorderThickness="1" Padding="10" MaxHeight="360" Width="520">
+                        <ListBox ItemsSource="{Binding History.Lines}" Background="Transparent" BorderThickness="0" />
+                    </Border>
+                </Popup>
+                <TextBlock Text="{Binding Message}" Foreground="{StaticResource Red}" VerticalAlignment="Center" Margin="20,0,0,0" />
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,14 @@
+.vs/
+bin/
+obj/
+Binaries/
+Intermediate/
+Library/
+Temp/
+Logs/
+node_modules/
+__pycache__/
+Resources/*.png
+*.dll
+*.exe
+*.pdb

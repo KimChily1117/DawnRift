@@ -1,0 +1,39 @@
+syntax = "proto3";
+package Protocol;
+option csharp_namespace = "Google.Protobuf.Protocol";  // ✅ 네임스페이스 추가
+
+import "Enum.proto";
+message Vector3
+{
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message TileInfo
+{
+    Vector3 position = 1;  // 타일 좌표
+    int32 type = 2;        // 0: 빈 타일, 1: 벽, 2: 물 등
+    bool isWalkable = 3;   // 이동 가능 여부
+    bool isVisible = 4;    // 전장의 안개 (보이는지 여부)
+    repeated ObjectInfo objects = 5; // 해당 타일에 있는 모든 객체 리스트
+}
+
+message ObjectInfo
+{
+    uint64 objectId = 1;
+    PLAYER_CHAMPION_TYPE champType = 2;
+    OBJECT_STATE_TYPE state = 3;
+    OBJECT_TYPE objType = 4;
+    string name = 5;
+    int32 hp = 6;
+    int32 maxHp = 7;
+    int32 attack = 8;
+    int32 defence = 9;
+    Vector3 position = 10;  // 🔥 좌표를 `Vector3`로 변경
+}
+
+message MapData
+{
+    repeated TileInfo tiles = 1;  // 맵 전체의 타일 정보
+}

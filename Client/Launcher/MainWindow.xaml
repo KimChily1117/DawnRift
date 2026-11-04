@@ -1,0 +1,38 @@
+<!-- 메인 창. 현재 ViewModel에 맞는 화면을 DataTemplate으로 표시한다. -->
+<Window x:Class="Launcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Launcher.ViewModels"
+        xmlns:views="clr-namespace:Launcher.Views"
+        Title="{Binding WindowTitle}" Width="1280" Height="760" MinWidth="1100" MinHeight="680"
+        Background="{StaticResource Night}" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:LoginViewModel}">
+            <views:LoginView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:RoomListViewModel}">
+            <views:RoomListView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:LobbyViewModel}">
+            <views:LobbyView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ChampSelectViewModel}">
+            <views:ChampSelectView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:InGameViewModel}">
+            <views:InGameView />
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+        <Image Source="{Binding Backdrop}" Stretch="UniformToFill" Opacity="0.35" />
+        <Rectangle>
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#66010A13" Offset="0" />
+                    <GradientStop Color="#EE010A13" Offset="1" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <ContentControl Content="{Binding CurrentView}" Focusable="False" />
+    </Grid>
+</Window>
